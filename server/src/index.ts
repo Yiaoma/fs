@@ -3,7 +3,7 @@ import express from "express";
 
 dotenv.config();
 
-const main = () => {
+const main = async () => {
   const app = express();
 
   app.get("/", (_, res) => {
