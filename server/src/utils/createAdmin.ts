@@ -1,6 +1,7 @@
-const { z } = require("zod");
-const argon2 = require("argon2");
-const { PrismaClient } = require("@prisma/client");
+import { z } from "zod";
+import argon2 from "argon2";
+import { prisma } from "../db/prisma";
+import { usernameRegex, passwordRegex } from "../constants/regex";
 
 const username = process.argv[2];
 const password = process.argv[3];
@@ -13,8 +14,9 @@ if (!username || !password) {
 (async () => {
   const validUsername = z
     .string()
-    .regex(/^(?=[a-zA-Z0-9._]{5,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/)
-    .safeParse(username.trim());
+    .trim()
+    .regex(usernameRegex)
+    .safeParse(username);
   if (!validUsername.success) {
     console.error("Invalid username");
     process.exit(1);
@@ -22,16 +24,13 @@ if (!username || !password) {
 
   const validPassword = z
     .string()
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-    )
-    .safeParse(password.trim());
+    .trim()
+    .regex(passwordRegex)
+    .safeParse(password);
   if (!validPassword.success) {
     console.error("Invalid password");
     process.exit(1);
   }
-
-  const prisma = new PrismaClient();
 
   try {
     const user = await prisma.user.findUnique({
