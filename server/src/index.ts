@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import express from "express";
+import cookieParser from "cookie-parser";
 import { authRouter } from "./routes/authRouter";
 
 dotenv.config();
@@ -8,6 +9,7 @@ const main = async () => {
   const app = express();
 
   app.use(express.json());
+  app.use(cookieParser());
 
   app.use("/auth", authRouter);
 
