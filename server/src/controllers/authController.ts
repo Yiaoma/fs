@@ -1,7 +1,7 @@
 import argon2 from "argon2";
-import jwt from "jsonwebtoken";
 import { prisma } from "../db/prisma";
 import type { Request, Response } from "express";
+import { createAccessToken, createRefreshToken } from "../utils/createToken";
 
 export const login = async (req: Request, res: Response) => {
   const { username, password } = req.body;
@@ -19,17 +19,9 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const accessToken = jwt.sign(
-      { userId: user.id },
-      process.env.ACCESS_TOKEN_SECRET!,
-      { expiresIn: "15m" }
-    );
+    const accessToken = createAccessToken(user.id);
 
-    const refreshToken = jwt.sign(
-      { userId: user.id },
-      process.env.REFRESH_TOKEN_SECRET!,
-      { expiresIn: "1d" }
-    );
+    const refreshToken = createRefreshToken(user.id);
 
     await prisma.user.update({
       where: { id: user.id },
