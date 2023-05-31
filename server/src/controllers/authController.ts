@@ -1,42 +1,20 @@
-import { z } from "zod";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { prisma } from "../db/prisma";
 import type { Request, Response } from "express";
 
-const usernameRegex = /^(?=[a-zA-Z0-9._]{5,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/;
-const passwordRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
 export const login = async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
-  const validUsername = z
-    .string()
-    .trim()
-    .regex(usernameRegex)
-    .safeParse(username);
-  if (!validUsername.success) {
-    return res.status(401).json({ error: "Invalid username" });
-  }
-
-  const validPassword = z.string().regex(passwordRegex).safeParse(password);
-  if (!validPassword.success) {
-    return res.status(401).json({ error: "Invalid password" });
-  }
-
   try {
     const user = await prisma.user.findUnique({
-      where: { username: validUsername.data },
+      where: { username },
     });
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const passwordValid = await argon2.verify(
-      user.passwordHash,
-      validPassword.data
-    );
+    const passwordValid = await argon2.verify(user.passwordHash, password);
     if (!passwordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
