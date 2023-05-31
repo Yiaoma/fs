@@ -14,19 +14,19 @@ const Index = () => {
             name="username"
             label="Username"
             type="text"
-            pattern=""
+            pattern="^(?=[a-zA-Z0-9._]{5,20}$)(?!.*[_.]{2})[^_.].*[^_.]$" // TODO: Move to constants
             required
           />
           <Input
             name="password"
             label="Password"
             type="password"
-            pattern=""
+            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" // TODO: Move to constants
             required
           />
           <button
             type="submit"
-            className="rounded-md bg-green-700 px-3 py-1.5 text-sm font-semibold text-white shadow-sm"
+            className="rounded-md bg-green-700 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors duration-300 hover:bg-green-600 "
           >
             Sign in
           </button>
