@@ -1,7 +1,11 @@
+import { useContext } from "react";
 import Input from "../components/Input";
 import { BiCircle } from "react-icons/bi";
+import AuthContext from "../contexts/AuthContext";
 
 const Index = () => {
+  const { accessToken } = useContext(AuthContext);
+
   return (
     <section className="flex h-screen w-full items-center bg-neutral-50">
       <div className="w-full">
