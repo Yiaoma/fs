@@ -1,29 +1,59 @@
-import { useContext } from "react";
+import { useReducer } from "react";
 import Input from "../components/Input";
 import { BiCircle } from "react-icons/bi";
-import AuthContext from "../contexts/AuthContext";
+import { CgSpinner, CgCheck, CgClose } from "react-icons/cg";
+
+interface FormState {
+  idle: boolean;
+  loading: boolean;
+  success: boolean;
+  error: boolean;
+}
+
+interface FormAction {
+  type: "RESET" | "SUCCESS" | "LOADING" | "ERROR";
+}
+
+const initialState = {
+  idle: true,
+  loading: false,
+  success: false,
+  error: false,
+};
+
+const formReducer = (state: FormState, action: FormAction) => {
+  switch (action.type) {
+    case "RESET":
+      return initialState;
+    case "SUCCESS":
+      return { idle: false, loading: false, error: false, success: true };
+    case "LOADING":
+      return { idle: false, loading: true, error: false, success: false };
+    case "ERROR":
+      return { idle: false, loading: false, error: true, success: false };
+    default:
+      return state;
+  }
+};
 
 const Index = () => {
-  const { accessToken, setAccessToken } = useContext(AuthContext);
+  const [state, dispatch] = useReducer(formReducer, initialState);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData.entries());
+    dispatch({ type: "LOADING" });
+
+    setTimeout(() => {
+      dispatch({ type: "ERROR" });
+
+      setTimeout(() => {
+        dispatch({ type: "RESET" });
+      }, 2000);
+    }, 5000);
 
     try {
-      const response = await fetch("http://localhost:3001/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
-
-      const responseData = await response.json();
-
-      setAccessToken(responseData.accessToken);
     } catch (error) {
       // Internal server error
       console.error(error);
@@ -57,9 +87,17 @@ const Index = () => {
           />
           <button
             type="submit"
-            className="rounded-md bg-green-700 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors duration-300 hover:bg-green-600 "
+            className={`${state.error ? "shake disabled:bg-red-600" : ""} ${
+              state.success ? "disabled:bg-green-600" : ""
+            } rounded-md bg-green-700 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors duration-300 disabled:bg-neutral-500`}
+            disabled={!state.idle}
           >
-            Sign in
+            {state.idle && "Sign in"}
+            {state.error && <CgClose className="mx-auto text-xl" />}
+            {state.loading && (
+              <CgSpinner className="mx-auto animate-spin text-xl" />
+            )}
+            {state.success && <CgCheck className="mx-auto text-xl" />}
           </button>
         </form>
       </div>
