@@ -2,38 +2,14 @@ import { useReducer } from "react";
 import Input from "../components/Input";
 import { BiCircle } from "react-icons/bi";
 import { CgSpinner, CgCheck, CgClose } from "react-icons/cg";
+import { formReducer } from "../reducers/formReducer";
 
-interface FormState {
-  idle: boolean;
-  loading: boolean;
-  success: boolean;
-  error: boolean;
-}
-
-interface FormAction {
-  type: "RESET" | "SUCCESS" | "LOADING" | "ERROR";
-}
-
+// TODO: This is a repetitive code, move to a hook
 const initialState = {
   idle: true,
   loading: false,
   success: false,
   error: false,
-};
-
-const formReducer = (state: FormState, action: FormAction) => {
-  switch (action.type) {
-    case "RESET":
-      return initialState;
-    case "SUCCESS":
-      return { idle: false, loading: false, error: false, success: true };
-    case "LOADING":
-      return { idle: false, loading: true, error: false, success: false };
-    case "ERROR":
-      return { idle: false, loading: false, error: true, success: false };
-    default:
-      return state;
-  }
 };
 
 const Index = () => {
