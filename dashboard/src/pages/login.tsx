@@ -40,14 +40,13 @@ const Login = () => {
 
         return;
       }
-
+      addNotification("You're logged in");
       login(responseData.accessToken);
       setStatus("success");
     } catch (error) {
-      // Internal server error
       addNotification("Something went wrong. Please try again later.");
-      console.error(error);
       setStatus("error");
+      console.error(error);
     }
   };
 
