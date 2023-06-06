@@ -90,3 +90,37 @@ export const logout = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const refresh = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies?.jid;
+  if (!refreshToken) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
+  let decodedRefreshToken;
+  try {
+    decodedRefreshToken = (await jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET!
+    )) as UserJWTPayload;
+  } catch (error) {
+    console.error(error);
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: decodedRefreshToken.id },
+    });
+    if (!user || user.refreshToken !== refreshToken) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const accessToken = createAccessToken(user.id);
+
+    return res.status(200).send({ accessToken });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
