@@ -1,12 +1,15 @@
 import Input from "../components/Input";
 import { BiCircle } from "react-icons/bi";
+import { Navigate } from "react-router-dom";
 import { useState, useContext } from "react";
+import AuthContext from "../contexts/AuthContext";
 import { CgSpinner, CgClose, CgCheck } from "react-icons/cg";
 import NotificationContext from "../contexts/NotificationContext";
 
 type FormStatusType = "idle" | "loading" | "success" | "error";
 
 const Login = () => {
+  const { accessToken, login } = useContext(AuthContext);
   const { addNotification } = useContext(NotificationContext);
   const [status, setStatus] = useState<FormStatusType>("idle");
 
@@ -38,6 +41,7 @@ const Login = () => {
         return;
       }
 
+      login(responseData.accessToken);
       setStatus("success");
     } catch (error) {
       // Internal server error
@@ -46,6 +50,8 @@ const Login = () => {
       setStatus("error");
     }
   };
+
+  if (accessToken) return <Navigate to="/" />;
 
   return (
     <section className="flex h-screen w-full items-center bg-neutral-50">
