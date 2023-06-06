@@ -28,8 +28,6 @@ const Login = () => {
 
       const responseData = await response.json();
 
-      console.log(responseData);
-
       if (!response.ok) {
         addNotification(responseData.error);
         setStatus("error");

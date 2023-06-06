@@ -9,10 +9,16 @@ interface NotificationProviderProps {
   children: React.ReactNode;
 }
 
-const NotificationContext = createContext({
-  notifications: [] as Notification[],
-  addNotification: (text: string) => {},
-  removeNotification: (id: number) => {},
+interface NotificationContextProps {
+  notifications: Notification[];
+  addNotification: (text: string) => void;
+  removeNotification: (id: number) => void;
+}
+
+const NotificationContext = createContext<NotificationContextProps>({
+  notifications: [],
+  addNotification: () => {},
+  removeNotification: () => {},
 });
 
 export const NotificationProvider = ({
