@@ -42,7 +42,7 @@ const App = () => {
   return (
     <>
       <Notifications />
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {loading && <Loading key="Loading" />}
         <Routes location={location} key={location.pathname}>
           <Route element={<RequireAuth />}>
