@@ -32,7 +32,7 @@ const Notifications = () => {
   const { notifications } = useContext(NotificationContext);
 
   return (
-    <div className="fixed right-4 top-4 grid gap-y-2">
+    <div className="fixed right-4 top-4 z-50 grid gap-y-2">
       <AnimatePresence>
         {notifications.map((notification) => (
           <Notification key={notification.id} {...notification} />

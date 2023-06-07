@@ -5,6 +5,7 @@ import { useState, useContext } from "react";
 import AuthContext from "../contexts/AuthContext";
 import { CgSpinner, CgClose, CgCheck } from "react-icons/cg";
 import NotificationContext from "../contexts/NotificationContext";
+import { motion } from "framer-motion";
 
 type FormStatusType = "idle" | "loading" | "success" | "error";
 
@@ -32,28 +33,33 @@ const Login = () => {
       const responseData = await response.json();
 
       if (!response.ok) {
-        addNotification(responseData.error);
-        setStatus("error");
-        setTimeout(() => {
-          setStatus("idle");
-        }, 2000);
-
-        return;
+        throw new Error(responseData.error);
       }
+
       addNotification("You're logged in");
       login(responseData.accessToken);
       setStatus("success");
-    } catch (error) {
-      addNotification("Something went wrong. Please try again later.");
+    } catch (error: any) {
+      if (error.message === "Failed to fetch") {
+        addNotification("Failed to connect to the server");
+      } else {
+        addNotification(error.message);
+      }
       setStatus("error");
-      console.error(error);
+      setTimeout(() => setStatus("idle"), 2000);
     }
   };
 
   if (accessToken) return <Navigate to="/" />;
 
   return (
-    <section className="flex h-screen w-full items-center bg-neutral-50">
+    <motion.section
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="flex h-screen w-full items-center bg-neutral-50"
+    >
       <div className="w-full">
         <BiCircle className="mx-auto text-5xl text-green-700" />
         <h1 className="mt-6 text-center text-2xl font-bold">
@@ -93,7 +99,7 @@ const Login = () => {
           </button>
         </form>
       </div>
-    </section>
+    </motion.section>
   );
 };
 
