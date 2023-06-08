@@ -1,7 +1,9 @@
-import { useContext, useEffect } from "react";
 import NotificationContext, {
   type Notification,
 } from "../contexts/NotificationContext";
+import { GrFormClose } from "react-icons/gr";
+import { useContext, useEffect } from "react";
+import { IoWarningOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Notification = ({ id, text }: Notification) => {
@@ -17,13 +19,18 @@ const Notification = ({ id, text }: Notification) => {
 
   return (
     <motion.div
+      layout
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.2 }}
-      className="origin-top-right rounded-md bg-white p-4 shadow-md"
+      className="flex origin-top-right rounded-md border bg-white p-4 shadow-md"
     >
-      <p className="text-sm font-medium">{text}</p>
+      <IoWarningOutline className="text-2xl text-red-600" />
+      <p className="ml-3 pt-0.5 text-sm font-medium">{text}</p>
+      <button onClick={() => removeNotification(id)}>
+        <GrFormClose className="ml-4 text-xl text-neutral-50" />
+      </button>
     </motion.div>
   );
 };
